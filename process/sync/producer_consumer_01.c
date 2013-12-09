@@ -79,9 +79,8 @@ int main(int argc, char* argv[]) {
 
 }
 
-#ifndef USE_LOCK
 #define USE_LOCK 1
-#endif
+// those macro var would be needless in an advanced programming language with boolean type.
 
 void *produce(void* arg) {
 	for (;;) {
