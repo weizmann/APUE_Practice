@@ -18,7 +18,54 @@
  *
  * =====================================================================================
  */
-#include "producer_consumer_01.h"
+#include "producer_consumer_main.h"
+
+#define min(a, b) ((a) > (b) ? (b) : (a))
+#define max(a, b) ((a) < (b) ? (a) : (b))
+//
+// global variables : 
+// 		[nitems] : item counts;
+//
+int main(int argc, char* argv[]) {
+	int i, nthreads, count[MAXTHREADS];
+	pthread_t tid_produce[MAXTHREADS], tid_consume;
+
+	if (argc != 3) {
+		printf("Usage : produce_consume <#items> <#threads>\n");
+		return -1;
+	}
+
+	nitems = min(atoi(argv[1]), MAXITEMS);
+	nthreads = min(atoi(argv[2]), MAXTHREADS);
+
+	for (i = 0; i < nthreads; i++) {
+		count[i] = i;
+		if (pthread_create(&tid_produce[i], NULL, produce, &count[i]) != 0) {
+			printf("create thread error...\n");
+			return(-1);
+		}
+	}
+
+	for (i = 0; i < nthreads; i++) {
+		if (pthread_join(tid_produce[i], NULL) != 0) {
+			printf("pthread join error...\n");
+			return(-1);
+		} 
+		printf("count[%d] = %d\n", i, count[i]);
+	}
+
+	if (pthread_create(&tid_consume, NULL, consume, NULL) != 0) {
+		printf("create consume thread error..\n");
+		return -1;
+	}
+
+	if (pthread_join(tid_consume, NULL) != 0) {
+		printf("pthread join consume thread error...\n");
+		return -1;
+	}
+	return(0);
+
+}
 
 #define USE_LOCK 1
 // those macro var would be needless in an advanced programming language with boolean type.
